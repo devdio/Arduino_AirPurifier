@@ -134,3 +134,125 @@ void loop() {
   delay(500);
 }
 ```
+  
+### 온습도 센서
+
+```c
+#include <DHT11.h>
+
+#define DHTPIN 4
+DHT11 dht11(DHTPIN);
+
+void setup() {
+    Serial.begin(9600);
+}
+
+void loop() {
+    int temperature = 0;
+    int humidity = 0;
+
+    int result = dht11.readTemperatureHumidity(temperature, humidity);
+
+    if (result == 0) {
+        Serial.print("Temperature: ");
+        Serial.print(temperature);
+        Serial.print(" °C\tHumidity: ");
+        Serial.print(humidity);
+        Serial.println(" %");
+    } else {
+        Serial.println(DHT11::getErrorString(result));
+    }
+}
+```
+
+### 릴레이(FAN) 동작
+```c
+int FAN = 3 ;
+
+void setup() {
+  pinMode(FAN,OUTPUT);
+
+}
+
+void loop() {
+ digitalWrite(FAN, HIGH);
+ delay(5000);
+ digitalWrite(FAN, LOW);
+ delay(5000);
+}
+```
+
+### 먼지 센서
+
+```c
+//Dust라는 변수 선언과 미세먼지 값, 습도 값, 온도 값 문자열을 담기위한 배열 선언
+int Dust = 0;
+
+//각 핀과 연결된 핀 번호를 저장할 변수 선언 
+int Vo = A0 ;
+int V_LED = 2 ;
+
+//미세먼지값 측정을 위한 데이터값 변수 선언
+float Vo_value = 0;
+float Voltage = 0;
+
+void setup()
+{     
+  // 시리얼 통신 시작
+  Serial.begin(9600);
+
+  //핀모드 입출력 설정
+  pinMode(V_LED, OUTPUT);
+  pinMode(Vo, INPUT);
+}
+
+void loop()
+{
+  // 시리얼 모니터 출력
+  Serial.println("ok");
+  
+  //LOW를 줘서 내부의 적외선을 켠다.
+  digitalWrite(V_LED, LOW);
+  delayMicroseconds(280);
+  Vo_value = analogRead(Vo);
+  delayMicroseconds(40);
+  digitalWrite(V_LED,HIGH);
+  delayMicroseconds(9680);
+  
+  /*
+  전압[V] = (아날로그 핀 값) * 5.0 / 1024
+  미세먼지 센서의 출력전압(Vo)는 먼지가 없을 때의 출력전압(Voc)과 미세먼지 농도에 비례하여 출력 
+  */
+ 
+  Voltage = Vo_value * 5.0 / 1024.0;
+  Serial.println(Voltage);
+  
+  if( Voltage < 0.6 ){
+    Dust = 0;
+  }
+  else {
+    // 이 수식은 먼지 센서에서 측정된 전압 신호를 실제 먼지 농도로 변환합니다. 
+    // 센서의 출력 전압은 공기 중의 먼지 농도에 따라 달라지며, 이 수식을 통해 그 농도를 계산할 수 있습니다.
+    Dust = 172*Voltage - 103.2;
+  }
+  Serial.println(Dust);
+  delay(500);
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
