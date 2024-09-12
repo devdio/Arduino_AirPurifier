@@ -93,7 +93,7 @@ void loop() {
 ```c
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include <Emotion_Farm.h>
+#include <Emotion.h>
  
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
